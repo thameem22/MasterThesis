@@ -1,4 +1,4 @@
-from src.gui import kivyinterface
+from gui import kivyinterface
 
 def main ():
     kivyinterface.main()
