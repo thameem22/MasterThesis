@@ -1,0 +1,39 @@
+<LoadFileWindow>:
+    id: loadFileScreen
+
+    FloatLayout:
+        FileChooserListView:
+            id: filechooser
+            path: "./"
+            filters: ['*.csv']
+            on_selection: loadFileScreen.open(filechooser.path, filechooser.selection)
+
+
+<MainWindow>:
+    userChatText: userChatText
+    completeLabel:completeLabel
+
+    FloatLayout:
+
+
+        TextInput:
+            id: userChatText
+            pos_hint: {"x":0.1, "top":0.9}
+            size_hint: 0.8, 0.5
+            multiline: True
+            font_size: (root.width**2 + root.height**2) / 14**4
+
+        Label:
+            id: completeLabel
+            size_hint: 0.5,0.12
+            pos_hint: {"x":0.1, "y":0.2}
+            text: ""
+            font_size: (root.width**2 + root.height**2) / 14**4
+
+        Button:
+            pos_hint:{"x":0.1, "y": 0.1}
+            size_hint:0.3,0.1
+            text: "Load File"
+            on_release:
+                app.root.current = "loadFile"
+                root.manager.transition.direction = "down"
