@@ -1,7 +1,8 @@
-from gui import kivyinterface
+from gui import kivy_interface
 
 def main ():
-    kivyinterface.main()
+    # Invokes the GUI
+    kivy_interface.main()
 
 if __name__ == "__main__":
     main ()

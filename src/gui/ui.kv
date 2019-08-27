@@ -4,9 +4,36 @@
     FloatLayout:
         FileChooserListView:
             id: filechooser
+            multiselect : True
             path: "./"
             filters: ['*.csv']
             on_selection: loadFileScreen.open(filechooser.path, filechooser.selection)
+
+<PopupWindow>:
+    id: popup
+    contentText: contentText
+    auto_dismiss: False
+
+    BoxLayout:
+        id: contentbox
+        orientation: "vertical"
+
+        ScrollView:
+            #do_scroll_y:True
+            bar_width:20
+            Label:
+                id: contentText
+                size_hint_y: None
+                height: self.texture_size[1]
+                text_size: (self.width-20), None
+                line_height: 1.5
+                valign: "top"
+
+        Button:
+            text: "Close"
+            size_hint_y: None
+            height: "40dp"
+            on_press: popup.close()
 
 
 <MainWindow>:
@@ -15,25 +42,197 @@
 
     FloatLayout:
 
+        BoxLayout:
+            orientation: 'vertical'
 
-        TextInput:
-            id: userChatText
-            pos_hint: {"x":0.1, "top":0.9}
-            size_hint: 0.8, 0.5
-            multiline: True
-            font_size: (root.width**2 + root.height**2) / 14**4
+            TextInput:
+                id: userChatText
+                pos_hint: {"x":0.1, "top":0.9}
+                size_hint: 0.8, 0.3
+                multiline: True
+                font_size: (root.width**2 + root.height**2) / 14**4
+
+            Label:
+                id: completeLabel
+                size_hint: 0.5,0.12
+                pos_hint: {"x":0.1, "y":0.2}
+                text: ""
+                font_size: (root.width**2 + root.height**2) / 14**4
+
+        BoxLayout:
+            orientation: 'horizontal'
+
+            Label:
+                size_hint: 0.025,0.12
+                #pos_hint: {"x":0.1, "y":0.2}
+                text: ""
+
+            Button:
+                pos_hint: {"x":.2, "top":0.1}
+                #size_hint:0.3,0.1
+                size_hint: None, None
+                size: 200, 50
+                text: "Load File"
+                on_release:
+                    app.root.current = "loadFile"
+                    root.manager.transition.direction = "down"
+
+            Button:
+                pos_hint: {"x":.4, "top":0.1}
+                #size_hint:0.3,0.1
+                size_hint: None, None
+                size: 200, 50
+                text: "Compare"
+                on_release:
+                    app.root.current = "compare"
+                    root.manager.transition.direction = "down"
+
+            Label:
+                size_hint: 0.1,0.12
+                #pos_hint: {"x":0.1, "y":0.2}
+                text: ""
+
+            # creating the spinner
+            Spinner:
+                # Assigning id
+                id: spinner_id
+
+                # Callback
+                on_text: root.fetchFeatureData(spinner_id.text)
+
+                # initially text on spinner
+                text: "--Select--"
+
+                # total values on spinner
+                values: ["Exclamation", "Emoticons", "UpperCase", "TypingSpeed", "LatencyTime", "ChunkLength", "ChunkDuration", "TotalTokens", "BackspaceDensity", "BackspaceTime", "Questionmark", "SuspensionPoint", "PointsDensity", "CapitalLetter", "NonAlphabetic"]
+
+                # declaring size of the spinner
+                # and the position of it
+                pos_hint: {"x":0.1, "top":0.1}
+                size_hint: None, None
+                size: 200, 50
+                #pos_hint:{'center_x':.5, 'top': 0.1}
+
+<CompareWindow>:
+    callerTextInput : caller_text_input
+    receiverTextInput : receiver_text_input
+    compareErrorLabel : compare_error_label
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            #size_hint_y: None
+            #height: 100
+            orientation: 'vertical'
+            BoxLayout:
+                size_hint_y: None
+                height: 50
+                orientation: 'horizontal'
+                Label:
+                    text: 'Caller Path'
+                    size_hint: None, None
+                    size: 150, 50
+                TextInput:
+                    id: caller_text_input
+                    text: ''
+                Label:
+                    size_hint: None, None
+                    size: 20, 50
+                    text: ""
+                Button:
+                    text: 'Load Path'
+                    size_hint: None, None
+                    size: 100, 50
+                    on_release: root.showLoadCaller()
+
+            BoxLayout:
+                size_hint_y: None
+                height: 50
+                orientation: 'horizontal'
+                Label:
+                    text: 'Receiver Path'
+                    size_hint: None, None
+                    size: 150, 50
+                TextInput:
+                    id: receiver_text_input
+                    text: ''
+                Label:
+                    size_hint: None, None
+                    size: 20, 50
+                    text: ""
+                Button:
+                    text: 'Load Path'
+                    size_hint: None, None
+                    size: 100, 50
+                    on_release: root.showLoadReceiver()
 
         Label:
-            id: completeLabel
+            id: compare_error_label
             size_hint: 0.5,0.12
-            pos_hint: {"x":0.1, "y":0.2}
+            #pos_hint: {"x":0.1, "y":0.2}
             text: ""
             font_size: (root.width**2 + root.height**2) / 14**4
 
-        Button:
-            pos_hint:{"x":0.1, "y": 0.1}
-            size_hint:0.3,0.1
-            text: "Load File"
-            on_release:
-                app.root.current = "loadFile"
-                root.manager.transition.direction = "down"
+        BoxLayout:
+            size_hint_y: None
+            pos_hint: {"x":0.2}
+            height: 30
+            Button:
+                text: 'Compare'
+                size_hint: None, None
+                size: 200, 50
+                on_release: root.compare_data()
+            Label:
+                size_hint: None, None
+                size: 50, 50
+                text: ""
+            Button:
+                text: 'Close'
+                size_hint: None, None
+                size: 200, 50
+                on_release:
+                    app.root.current = "main"
+                    root.manager.transition.direction = "down"
+
+
+
+
+<LoadDialogCallerWindow>:
+    BoxLayout:
+        size: root.size
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+            path: "./"
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path)
+
+
+
+<LoadDialogReceiverWindow>:
+    BoxLayout:
+        size: root.size
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+            path: "./"
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path)
